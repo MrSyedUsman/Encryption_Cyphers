@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+.btn-group .button {
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  float: left;
+}
+
+.btn-group .button:not(:last-child) {
+  border-right: none;
+}
+
+.btn-group .button:hover {
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+}
+</style>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="one.js"></script>
+<script src="two.js"></script>
+<script src="three.js"></script>
+<hr>
+
+<h2 style="color:Tomato; font-family:verdana">Select a cipher :</h2>
+<div class="btn-group">
+<button class="button" onclick="myFunction1()">Shift Cipher</button>
+<button class="button" onclick="myFunction2()">Substitution Cipher</button>
+<button class="button" onclick="myFunction3()">Vigenere Cipher</button>
+<button class="button" onclick="myFunction4()">Playfair Cipher</button>
+</div>
+
+<div id="field1" style="display: none; clear: both; width:800px; margin:0 auto; padding-top:10px">
+<h1 style="color:DodgerBlue; font-family:verdana">Shift Cipher</h1>
+<p>Text :</p> <br>
+<textarea id="txt" rows="5" cols="40"> </textarea><br>
+Key (Shift) : <br>
+<input type="tel" id="num"><br><br>
+<button onclick="Shift()">Encrypt</button><br><br>
+<button onclick="Unshift()">Decrypt</button>
+<br>
+<h3 id="ct"></h3>
+</div>
+
+<div id ="field2" style="display: none; clear: both; width:800px; margin:0 auto; padding-top:10px">
+<h1 style="color:DodgerBlue; font-family:verdana">Substitution Cipher</h1>
+<p>Text :</p><br>
+<textarea type="text" id="data" name="data" rows="5" cols="40"></textarea>
+<br>
+<p>PlainText List = "abcdefghijklmnopqrstuvwxyz"</p>
+<p>Mapping List = "bkvrfaqijnohptumsdgzexwlcy"</p>
+<br>
+<button onclick="Substitute()">Encrypt</button><br><br>
+<button onclick="DeSubstitute()">Decrypt</button>
+<br><br>
+<h3 id="subs"></h3>
+</div>
+
+<div id="field3" style="display: none; clear: both; width:800px; margin:0 auto; padding-top:10px">
+<h1 style="color:DodgerBlue; font-family:verdana">Vigenere Cipher</h1>
+<p>Message: </p>
+<textarea id="userText" rows="5" cols="40"></textarea><br>
+<p>Keyword: </p>
+<input id="keyword" type="text"><br><br>
+<button id="encrypt" type="submit">Convert</button>
+</div>
+
+<div id="field4" style="display: none; clear: both; width:800px; margin:0 auto; padding-top:10px">
+<h1 style="color:DodgerBlue; font-family:verdana">Playfair Cipher </h1>
+<p>Key :</p>
+<input id="key" type="text"><br><br>
+<p>Text :</p>
+<textarea id="String" type="text" rows="5" cols="40"></textarea><br><br>
+<button onclick="processKey(), cipher()">Encrypt</button>
+<h4 id="printValue"></h4>
+<button onclick="deCodeCipher()">Decrypt</button>
+<h4 id="printDeCode"></h4>
+</div>
+
+<script>
+function myFunction1() {
+ document.getElementById("field1").style.display = "block";
+ document.getElementById("field2").style.display = "none";
+ document.getElementById("field3").style.display = "none";
+ document.getElementById("field4").style.display = "none";
+}
+
+function myFunction2() {
+ document.getElementById("field1").style.display = "none";
+ document.getElementById("field2").style.display = "block";
+ document.getElementById("field3").style.display = "none";
+ document.getElementById("field4").style.display = "none";
+}
+
+function myFunction3() {
+ document.getElementById("field1").style.display = "none";
+ document.getElementById("field2").style.display = "none";
+ document.getElementById("field3").style.display = "block";
+ document.getElementById("field4").style.display = "none";
+}
+
+function myFunction4() {
+ document.getElementById("field1").style.display = "none";
+ document.getElementById("field2").style.display = "none";
+ document.getElementById("field3").style.display = "none";
+ document.getElementById("field4").style.display = "block";
+}
+
+
+var encryptBtn = $("#encrypt");
+
+function isUpperCase(letter){
+  var l = letter.charCodeAt();
+  if(l >= 65 && l <= 90){
+    return true;
+  }else{
+    return false;
+  }
+};
+
+function isLowerCase(letter){
+  var l = letter.charCodeAt();
+  if(l >= 97 && l <= 122){
+    return true;
+  }else{
+    return false;
+  }
+};
+
+var encrypt = function(plainMsg, key){
+  var cypher = "";
+  for(var i = 0, j = 0; i < plainMsg.length; i++){
+    var currentLetter = plainMsg[i];
+
+    if(isUpperCase(currentLetter)){
+      var upperLetter = ((currentLetter.charCodeAt() - 65) + (key[j%key.length].toUpperCase().charCodeAt() - 65)) % 26;
+      cypher += String.fromCharCode(upperLetter+65);
+      j++;
+    }else if(isLowerCase(currentLetter)){
+      var lowerLetter = ((currentLetter.charCodeAt() - 97) + (key[j%key.length].toLowerCase().charCodeAt() - 97)) % 26;
+      cypher += String.fromCharCode(lowerLetter+97);
+      j++;
+    }else{
+      cypher += currentLetter;
+    }
+  }
+  return cypher;
+};
+
+$(document).ready(function(){
+
+  encryptBtn.on("click", function(){
+    var plainMsg = $("#userText");
+    var keyword = $("#keyword");
+
+    if(plainMsg.val() == "" || keyword.val() == "" ){
+      alert("Please type both secret message and keyword!");
+    }else{
+      plainMsg.val(encrypt(plainMsg.val(), keyword.val()));
+    }
+  });
+
+});
+
+</script>
+</body>
+</html>
